@@ -8,6 +8,7 @@ License: GPL
 Group: Development/Python
 URL: http://people.redhat.com/zcerza/dogtail/
 Source0: ftp://ftp.gnome.org/pub/GNOME/sources/%{name}/%{pkgname}-%{version}.tar.bz2
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: python-devel
 BuildRequires: pyrex
 BuildRequires: libat-spi-devel
