@@ -3,7 +3,7 @@
 Summary: Python binding for AT-SPI
 Name: python-spi
 Version: 0.5.4
-Release: %mkrel 1
+Release: %mkrel 2
 License: GPL
 Group: Development/Python
 URL: http://people.redhat.com/zcerza/dogtail/
