@@ -2,15 +2,17 @@
 
 Summary: Python binding for AT-SPI
 Name: python-spi
-Version: 0.5.4
-Release: %mkrel 2
+Version: 0.6.1
+Release: %mkrel 1
 License: GPL
 Group: Development/Python
 URL: http://people.redhat.com/zcerza/dogtail/
-Source0: ftp://ftp.gnome.org/pub/GNOME/sources/%{name}/%{pkgname}-%{version}.tar.bz2
+Source0: http://people.redhat.com/zcerza/dogtail/releases/%{pkgname}-%{version}.tar.gz
+# (fc) 0.6.1-1mdv fix build with latest pyrex (Debian + fcrozat)
+Patch0: pyspi-0.6.1-newpyrex.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: python-devel
-BuildRequires: pyrex
+BuildRequires: python-pyrex
 BuildRequires: libat-spi-devel
 
 Provides: pyspi
@@ -20,6 +22,7 @@ Python binding for AT-SPI
 
 %prep
 %setup -q -n %{pkgname}-%{version}
+%patch0 -p1 -b .newpyrex
 
 %build
 python ./setup.py build
@@ -35,5 +38,4 @@ rm -rf $RPM_BUILD_ROOT
 %files 
 %defattr(-,root,root,-)
 %doc COPYING 
-%{_libdir}/python*/site-packages/*.so
-
+%py_platsitedir/*
