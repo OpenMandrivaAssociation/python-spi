@@ -1,0 +1,119 @@
+diff -p -up pyspi-0.6.1/cspi.pxd.newpyrex pyspi-0.6.1/cspi.pxd
+--- pyspi-0.6.1/cspi.pxd.newpyrex	2006-08-03 22:27:10.000000000 +0200
++++ pyspi-0.6.1/cspi.pxd	2008-07-23 16:38:04.000000000 +0200
+@@ -14,9 +14,7 @@ cdef extern from "cspi/spi.h":
+ 
+ 	ctypedef struct AccessibleTextRange
+ 	ctypedef struct AccessibleKeySet
+-	ctypedef enum SPIBoolean:
+-		FALSE = 0,
+-		TRUE
++	ctypedef unsigned int SPIBoolean
+ 
+ 	ctypedef struct AccessibleEvent:
+ 		char  *type
+diff -p -up pyspi-0.6.1/pyspi.pyx.newpyrex pyspi-0.6.1/pyspi.pyx
+--- pyspi-0.6.1/pyspi.pyx.newpyrex	2006-10-02 18:46:41.000000000 +0200
++++ pyspi-0.6.1/pyspi.pyx	2008-07-23 16:43:39.000000000 +0200
+@@ -25,9 +25,15 @@ cdef class Table (Base)
+ cdef class Event (EventBase)
+ cdef class DeviceEvent
+ 
+-ctypedef enum bool:
++ctypedef unsigned int bool
++
++import __builtin__
++try:
++	False = __builtin__.False
++	True = __builtin__.True
++except AttributeError:
+ 	False = 0
+-	True
++	True = 1
+ 
+ # SPIExceptionCode values:
+ (SPI_EXCEPTION_UNSPECIFIED, SPI_EXCEPTION_DISCONNECT, SPI_EXCEPTION_NO_IMPL, SPI_EXCEPTION_IO, SPI_EXCEPTION_BAD_DATA)=range(5) 
+@@ -731,24 +737,24 @@ cdef class Component (Accessible):
+ 	Wrapper around the low-level cspi.AccessibleComponent_ functions,
+ 	giving an OO-style API.
+ 	"""
+-	def getExtents (self, type=0):
++	def getExtents (self, key_type=0):
+ 		"""
+ 		Wraps cspi.AccessibleComponent_getExtents, returning an
+ 		(x,y,w,h) tuple.
+ 		"""
+ 		self.__checkSelf ()
+ 		cdef long x, y, w, h
+-		cspi.AccessibleComponent_getExtents (self.__item, &x, &y, &w, &h, type)
++		cspi.AccessibleComponent_getExtents (self.__item, &x, &y, &w, &h, key_type)
+ 		return (x, y, w, h)
+ 
+-	def getPosition (self, type = 0):
++	def getPosition (self, key_type = 0):
+ 		"""
+ 		Wraps cspi.AccessibleComponent_getPosition, returning an
+ 		(x,y) tuple.
+ 		"""
+ 		self.__checkSelf ()
+ 		cdef long x, y
+-		cspi.AccessibleComponent_getPosition (self.__item, &x, &y, type)
++		cspi.AccessibleComponent_getPosition (self.__item, &x, &y, key_type)
+ 		return (x, y)
+ 
+ 	def getSize (self):
+@@ -991,11 +997,11 @@ cdef class Hyperlink (Base):
+ 		Wraps cspi.AccessibleHyperlink_getObject
+ 		"""
+ 		self.__checkSelf ()
+-		cdef Accessible object
+-		object = Accessible ()
+-		object.__setItem (cspi.AccessibleHyperlink_getObject (self.__item, i))
+-		object.__checkSelf ()
+-		return object
++		cdef Accessible obj
++		obj = Accessible ()
++		obj.__setItem (cspi.AccessibleHyperlink_getObject (self.__item, i))
++		obj.__checkSelf ()
++		return obj
+ 
+ 	def getURI (self, i):
+ 		"""
+@@ -1032,24 +1038,24 @@ cdef class Image (Base):
+ 		cspi.AccessibleImage_getImageSize(self.__item, &w, &h);
+ 		return [w, h]
+ 
+-	def getImagePosition (self, type=0):
++	def getImagePosition (self, key_type=0):
+ 		"""
+ 		Wraps cspi.AccessibleImage_getImagePosition, returning a (x,y)
+ 		pair
+ 		"""
+ 		self.__checkSelf ()
+ 		cdef long x, y
+-		cspi.AccessibleImage_getImagePosition(self.__item, &x, &y, type)
++		cspi.AccessibleImage_getImagePosition(self.__item, &x, &y, key_type)
+ 		return [x, y]
+ 
+-	def getImageExtents (self, type=0):
++	def getImageExtents (self, key_type=0):
+ 		"""
+ 		Wraps cspi.AccessibleImage_getImageExtents, returning a
+ 		(x,y,w,h) tuple
+ 		"""
+ 		self.__checkSelf ()
+ 		cdef long x, y, w, h
+-		cspi.AccessibleImage_getImageExtents(self.__item, &x, &y, &w, &h, type)
++		cspi.AccessibleImage_getImageExtents(self.__item, &x, &y, &w, &h, key_type)
+ 		return [x, y, w, h]
+ 
+ cdef class Value (Base):
+@@ -1551,7 +1557,7 @@ cdef class DeviceListener:
+ 	cdef cspi.AccessibleDeviceListener *__item
+ 	cdef public object modMasks
+ 
+-	def __init__ (self, callback, eventMask = cspi.SPI_KEY_PRESSED | cspi.SPI_KEY_RELEASED):
++	def __init__ (self, callback, eventMask = <int> cspi.SPI_KEY_PRESSED | <int> cspi.SPI_KEY_RELEASED):
+ 		"""
+ 		Registers a python callback function to be called.
+ 
