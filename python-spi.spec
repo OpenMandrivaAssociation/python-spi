@@ -6,7 +6,7 @@ Version: 0.6.1
 Release: %mkrel 2
 License: GPL
 Group: Development/Python
-URL: http://people.redhat.com/zcerza/dogtail/
+URL: https://people.redhat.com/zcerza/dogtail/
 Source0: http://people.redhat.com/zcerza/dogtail/releases/%{pkgname}-%{version}.tar.gz
 # (fc) 0.6.1-1mdv fix build with latest pyrex (Debian + fcrozat)
 Patch0: pyspi-0.6.1-newpyrex.patch
